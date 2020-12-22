@@ -27,6 +27,10 @@ if [ -n "$AWS_S3_ENDPOINT" ]; then
   ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
 fi
 
+if [ -n "$AWS_MAX_CONCURRENT_REQUESTS" ]; then
+    MAX_CONCURRENT_REQUESTS=$AWS_MAX_CONCURRENT_REQUESTS
+fi
+
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
 # https://github.com/jakejarvis/s3-sync-action/issues/1
@@ -36,6 +40,11 @@ ${AWS_SECRET_ACCESS_KEY}
 ${AWS_REGION}
 text
 EOF
+
+if [ -n "$MAX_CONCURRENT_REQUESTS" ]; then
+    echo "s3 =" >> ~/.aws/config
+    echo "    max_concurrent_requests = ${MAX_CONCURRENT_REQUESTS}" >> ~/.aws/config
+fi
 
 # Sync using our dedicated profile and suppress verbose messages.
 # All other flags are optional via the `args:` directive.
